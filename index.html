@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MyToken — Share & Save</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet"/>
+
+  <!-- 🎨 OUR CSS FILE IS LINKED HERE -->
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <!-- ===== TOAST NOTIFICATION (little popup message) ===== -->
+  <div class="toast" id="toast"></div>
+
+  <!-- ===== LOGIN MODAL (popup window) ===== -->
+  <div class="modal-overlay" id="loginModal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+
+      <!-- Step 1: Enter phone number -->
+      <div id="loginStep1">
+        <div class="modal-icon">📱</div>
+        <h3>Login to MyToken</h3>
+        <p>Enter your mobile number to continue</p>
+        <div class="phone-input-wrap">
+          <div class="phone-prefix">🇮🇳 +91</div>
+          <input class="phone-field" type="tel" maxlength="10" placeholder="Enter mobile number" id="phoneInput"/>
+        </div>
+        <button class="btn-modal" onclick="sendOTP()">Send OTP</button>
+      </div>
+
+      <!-- Step 2: Enter OTP -->
+      <div id="loginStep2" style="display:none;">
+        <div class="modal-icon">🔐</div>
+        <h3>Enter OTP</h3>
+        <p>Sent to +91 <span id="phoneDisplay"></span></p>
+        <div class="otp-inputs">
+          <input class="otp-input" maxlength="1" type="text" oninput="otpNext(this,0)"/>
+          <input class="otp-input" maxlength="1" type="text" oninput="otpNext(this,1)"/>
+          <input class="otp-input" maxlength="1" type="text" oninput="otpNext(this,2)"/>
+          <input class="otp-input" maxlength="1" type="text" oninput="otpNext(this,3)"/>
+        </div>
+        <button class="btn-modal" onclick="verifyOTP()">Verify & Login</button>
+        <p class="otp-hint">Demo OTP: <strong>1234</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== USE TOKEN MODAL ===== -->
+  <div class="modal-overlay" id="useTokenModal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('useTokenModal')">✕</button>
+      <h3>Use This Token</h3>
+      <p>Pay a small fee to unlock the token code</p>
+      <div class="use-modal-token">
+        <div class="platform-row">
+          <span id="useTokenEmoji" style="font-size:28px;"></span>
+          <div>
+            <strong id="useTokenPlatform"></strong><br/>
+            <span class="token-val-label" id="useTokenValue"></span>
+          </div>
+        </div>
+        <div class="code-box" id="useTokenCode" onclick="copyCode()">
+          🔒 LOCKED
+          <span class="copy-hint">Pay to reveal code</span>
+        </div>
+      </div>
+      <div class="payment-note">
+        💰 Seller earns ₹1 · You save big on <span id="useTokenPlatform2"></span>!
+      </div>
+      <button class="btn-modal" onclick="payAndUnlock()" id="payBtn">Pay & Unlock</button>
+    </div>
+  </div>
+
+  <!-- ===== NAVIGATION BAR ===== -->
+  <nav>
+    <div class="logo" id="logoBtn">My<span>Token</span> 🎟️</div>
+    <div class="nav-links">
+      <button class="nav-link active" onclick="goTo('home')"    id="nav-home">Home</button>
+      <button class="nav-link"        onclick="goTo('browse')"  id="nav-browse">Browse</button>
+      <button class="nav-link"        onclick="goTo('submit')"  id="nav-submit">Submit</button>
+      <button class="nav-link"        onclick="goTo('dashboard')" id="nav-dashboard">Dashboard</button>
+      <div id="navAuthArea">
+        <button class="nav-btn outline" onclick="openModal('loginModal')">Login</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ============================= -->
+  <!-- PAGE 1: HOME                  -->
+  <!-- ============================= -->
+  <div class="page active" id="page-home">
+
+    <!-- Hero section (big top banner) -->
+    <div class="hero">
+      <div class="hero-badge">🇮🇳 Made for Indians</div>
+      <h1>Got a free token?<br/><span>Share it. Earn from it!</span></h1>
+      <p>Share your unused rewards from GPay, PhonePe, Swiggy, Zomato & more — earn ₹1 for every token you share!</p>
+      <div class="hero-btns">
+        <button class="btn-hero-primary"   onclick="goTo('browse')">🔍 Browse Tokens</button>
+        <button class="btn-hero-secondary" onclick="goTo('submit')">+ Share My Token</button>
+      </div>
+    </div>
+
+    <!-- Stats bar -->
+    <div class="stats-bar">
+      <div class="stat-item"><div class="stat-num">12,480+</div><div class="stat-label">Tokens Shared</div></div>
+      <div class="stat-item"><div class="stat-num">8,920+</div><div class="stat-label">Happy Users</div></div>
+      <div class="stat-item"><div class="stat-num">₹12,480</div><div class="stat-label">Earned by Sharers</div></div>
+      <div class="stat-item"><div class="stat-num">₹4.2L+</div><div class="stat-label">Saved by Users</div></div>
+    </div>
+
+    <!-- How it works -->
+    <div class="section">
+      <div class="section-title">How MyToken Works 🎯</div>
+      <div class="section-sub">Simple, safe & super easy for every Indian!</div>
+      <div class="steps">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <div class="step-icon" style="background:#fff3ee;">📲</div>
+          <h3>Login with Phone</h3>
+          <p>Quick OTP login — no password needed. Just your Indian mobile number!</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <div class="step-icon" style="background:#e8f5e9;">🎟️</div>
+          <h3>Share Your Token</h3>
+          <p>Got a free coupon or reward? Submit it here. We'll verify and list it!</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <div class="step-icon" style="background:#e3f2fd;">💸</div>
+          <h3>Earn ₹1 Per Token</h3>
+          <p>Every time someone uses your token, you earn ₹1 directly to your wallet!</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">4</div>
+          <div class="step-icon" style="background:#fce4ec;">🛍️</div>
+          <h3>Use Others' Tokens</h3>
+          <p>Pay just ₹5–10 to unlock a token worth much more. Save big every time!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Platforms section -->
+    <div class="section section-white">
+      <div class="section-title">Tokens from all your favourite apps 🤩</div>
+      <div class="section-sub">Swiggy, Zomato, GPay, PhonePe, Amazon & many more!</div>
+      <div class="platforms">
+        <div class="chip chip-gpay">🟢 Google Pay</div>
+        <div class="chip chip-phone">📱 PhonePe</div>
+        <div class="chip chip-swiggy">🧡 Swiggy</div>
+        <div class="chip chip-zomato">❤️ Zomato</div>
+        <div class="chip chip-amazon">📦 Amazon</div>
+        <div class="chip chip-paytm">💙 Paytm</div>
+        <div class="chip chip-more">+ Many More</div>
+      </div>
+      <div style="text-align:center; margin-top:36px;">
+        <button class="btn-hero-primary btn-orange" onclick="goTo('browse')">Browse All Tokens →</button>
+      </div>
+    </div>
+
+  </div><!-- end page-home -->
+
+
+  <!-- ============================= -->
+  <!-- PAGE 2: BROWSE                -->
+  <!-- ============================= -->
+  <div class="page" id="page-browse">
+
+    <div class="browse-header">
+      <h2>Browse Tokens 🔍</h2>
+      <p>Find the best deals shared by fellow Indians</p>
+    </div>
+
+    <!-- Filter & Search bar -->
+    <div class="filter-bar">
+      <input class="search-input" type="text" placeholder="Search platform or category..." oninput="filterTokens(this.value)"/>
+      <button class="filter-btn active" onclick="filterCat('all',this)">All</button>
+      <button class="filter-btn" onclick="filterCat('food',this)">🍔 Food</button>
+      <button class="filter-btn" onclick="filterCat('payment',this)">💳 Payments</button>
+      <button class="filter-btn" onclick="filterCat('shopping',this)">🛍️ Shopping</button>
+      <button class="filter-btn" onclick="filterCat('travel',this)">✈️ Travel</button>
+    </div>
+
+    <!-- Token cards will be injected here by JavaScript -->
+    <div class="tokens-grid" id="tokensGrid"></div>
+
+  </div><!-- end page-browse -->
+
+
+  <!-- ============================= -->
+  <!-- PAGE 3: SUBMIT TOKEN          -->
+  <!-- ============================= -->
+  <div class="page" id="page-submit">
+    <div class="submit-wrap">
+      <div class="submit-card">
+        <h2>Share Your Token 🎟️</h2>
+        <div class="sub">Submit your unused reward and earn ₹1 when someone uses it!</div>
+
+        <!-- Earnings banner -->
+        <div class="earnings-banner">
+          <div class="banner-icon">💰</div>
+          <div class="banner-text">
+            <strong>Earn ₹1 per token!</strong>
+            <span>Withdraw to your bank via UPI once you hit ₹10</span>
+          </div>
+        </div>
+
+        <!-- Platform selector -->
+        <div class="form-group">
+          <label>Select Platform</label>
+          <div class="platform-select" id="platformSelect">
+            <div class="platform-opt" onclick="selectPlatform(this,'Google Pay')"><span class="emoji">🟢</span>Google Pay</div>
+            <div class="platform-opt" onclick="selectPlatform(this,'PhonePe')"><span class="emoji">📱</span>PhonePe</div>
+            <div class="platform-opt" onclick="selectPlatform(this,'Swiggy')"><span class="emoji">🧡</span>Swiggy</div>
+            <div class="platform-opt" onclick="selectPlatform(this,'Zomato')"><span class="emoji">❤️</span>Zomato</div>
+            <div class="platform-opt" onclick="selectPlatform(this,'Amazon')"><span class="emoji">📦</span>Amazon</div>
+            <div class="platform-opt" onclick="selectPlatform(this,'Paytm')"><span class="emoji">💙</span>Paytm</div>
+            <div class="platform-opt" onclick="selectPlatform(this,'Flipkart')"><span class="emoji">🛒</span>Flipkart</div>
+            <div class="platform-opt" onclick="selectPlatform(this,'Other')"><span class="emoji">✨</span>Other</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Token / Coupon Code</label>
+          <input type="text" placeholder="e.g. SAVE50GPY" id="tokenCode"/>
+        </div>
+        <div class="form-group">
+          <label>Token Value</label>
+          <input type="text" placeholder="e.g. ₹50 cashback, Free delivery, 30% off" id="tokenValue"/>
+        </div>
+        <div class="form-group">
+          <label>Expiry Date</label>
+          <input type="date" id="tokenExpiry"/>
+        </div>
+        <div class="form-group">
+          <label>Description (optional)</label>
+          <textarea placeholder="Any conditions? Min order? First order only? Tell buyers!" id="tokenDesc"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Your UPI ID (to receive ₹1 earnings)</label>
+          <input type="text" placeholder="yourname@upi" id="upiId"/>
+        </div>
+
+        <button class="btn-submit" onclick="submitToken()">🚀 Submit Token & Earn ₹1!</button>
+      </div>
+    </div>
+  </div><!-- end page-submit -->
+
+
+  <!-- ============================= -->
+  <!-- PAGE 4: DASHBOARD             -->
+  <!-- ============================= -->
+  <div class="page" id="page-dashboard">
+    <div class="dash-wrap">
+
+      <!-- User info -->
+      <div class="dash-top">
+        <div class="avatar" id="dashAvatar">R</div>
+        <div>
+          <div class="dash-name" id="dashName">Rahul K.</div>
+          <div class="dash-phone" id="dashPhone">+91 98765 43210</div>
+        </div>
+      </div>
+
+      <!-- Summary cards -->
+      <div class="dash-cards">
+        <div class="dash-card">
+          <div class="label">Total Earned</div>
+          <div class="value green">₹<span id="dashEarned">7</span></div>
+        </div>
+        <div class="dash-card">
+          <div class="label">Tokens Shared</div>
+          <div class="value orange" id="dashShared">7</div>
+        </div>
+        <div class="dash-card">
+          <div class="label">Tokens Used</div>
+          <div class="value blue" id="dashUsed">3</div>
+        </div>
+        <div class="dash-card">
+          <div class="label">Wallet Balance</div>
+          <div class="value pink">₹<span id="dashWallet">7</span></div>
+        </div>
+      </div>
+
+      <!-- My submitted tokens list -->
+      <div class="dash-section-title">My Submitted Tokens</div>
+      <div class="my-tokens-list" id="myTokensList"></div>
+
+      <!-- Withdraw section -->
+      <div class="withdraw-section">
+        <h3>💸 Withdraw Your Earnings</h3>
+        <p>Your balance: ₹<span id="withdrawBalance">7</span> · Minimum withdrawal: ₹10</p>
+        <button class="btn-withdraw" onclick="withdrawEarnings()">Withdraw via UPI</button>
+      </div>
+
+    </div>
+  </div><!-- end page-dashboard -->
+
+
+  <!-- ============================= -->
+  <!-- PAGE 5: ADMIN PANEL           -->
+  <!-- ============================= -->
+  <div class="page" id="page-admin">
+    <div class="admin-wrap">
+
+      <div class="admin-header">
+        <h2>Admin Panel 🛡️</h2>
+        <span class="admin-badge">Super Admin</span>
+      </div>
+
+      <!-- Admin summary stats -->
+      <div class="admin-stats">
+        <div class="admin-stat s1"><div class="label">Total Tokens</div><div class="value">248</div></div>
+        <div class="admin-stat s2"><div class="label">Revenue Today</div><div class="value">₹840</div></div>
+        <div class="admin-stat s3"><div class="label">Active Users</div><div class="value">1,240</div></div>
+        <div class="admin-stat s4"><div class="label">Pending Review</div><div class="value pink">12</div></div>
+      </div>
+
+      <!-- Admin tabs -->
+      <div class="admin-tabs">
+        <button class="admin-tab active" onclick="adminTab('pending',this)">⏳ Pending Approval</button>
+        <button class="admin-tab" onclick="adminTab('active',this)">✅ Active Tokens</button>
+        <button class="admin-tab" onclick="adminTab('users',this)">👥 Users</button>
+        <button class="admin-tab" onclick="adminTab('transactions',this)">💳 Transactions</button>
+      </div>
+
+      <!-- Table will be injected by JavaScript -->
+      <div class="admin-table" id="adminTable"></div>
+
+    </div>
+  </div><!-- end page-admin -->
+
+
+  <!-- 🟡 OUR JAVASCRIPT FILE IS LINKED HERE (always at bottom!) -->
+  <script src="script.js"></script>
+
+</body>
+</html>
