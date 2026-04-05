@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Retro Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0d1117;
+    }
+
+    .calc {
+      background: #1a1a2e;
+      border-radius: 20px;
+      padding: 28px;
+      width: 300px;
+      border: 2px solid #16213e;
+    }
+
+    .screen {
+      background: #0d1117;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      border: 1.5px solid #30363d;
+      min-height: 90px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: flex-end;
+    }
+
+    .screen-expr {
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      color: #58a6ff;
+      min-height: 20px;
+      word-break: break-all;
+    }
+
+    .screen-val {
+      font-family: 'VT323', monospace;
+      font-size: 52px;
+      color: #e2e8f0;
+      line-height: 1;
+      word-break: break-all;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .btn {
+      font-family: 'Space Mono', monospace;
+      font-size: 15px;
+      font-weight: 700;
+      border: none;
+      border-radius: 10px;
+      padding: 16px 0;
+      cursor: pointer;
+      transition: transform 0.08s, background 0.1s;
+      user-select: none;
+    }
+
+    .btn:active { transform: scale(0.93); }
+
+    .btn-num { background: #16213e; color: #f97316; }
+    .btn-num:hover { background: #1d2a4a; }
+
+    .btn-op { background: #1e3a5f; color: #58a6ff; }
+    .btn-op:hover { background: #264d80; }
+
+    .btn-eq {
+      background: #58a6ff;
+      color: #0d1117;
+      grid-column: span 2;
+    }
+    .btn-eq:hover { background: #79b8ff; }
+
+    .btn-clear { background: #3a1c1c; color: #f85149; }
+    .btn-clear:hover { background: #4a2020; }
+
+    .btn-zero { grid-column: span 2; }
+  </style>
+</head>
+<body>
+  <div class="calc">
+    <div class="screen">
+      <div class="screen-expr" id="expr"></div>
+      <div class="screen-val" id="display">0</div>
+    </div>
+    <div class="buttons">
+      <button class="btn btn-clear" onclick="clearAll()">AC</button>
+      <button class="btn btn-op" onclick="toggleSign()">+/-</button>
+      <button class="btn btn-op" onclick="percent()">%</button>
+      <button class="btn btn-op" onclick="setOp('/')">÷</button>
+
+      <button class="btn btn-num" onclick="input('7')">7</button>
+      <button class="btn btn-num" onclick="input('8')">8</button>
+      <button class="btn btn-num" onclick="input('9')">9</button>
+      <button class="btn btn-op" onclick="setOp('*')">×</button>
+
+      <button class="btn btn-num" onclick="input('4')">4</button>
+      <button class="btn btn-num" onclick="input('5')">5</button>
+      <button class="btn btn-num" onclick="input('6')">6</button>
+      <button class="btn btn-op" onclick="setOp('-')">−</button>
+
+      <button class="btn btn-num" onclick="input('1')">1</button>
+      <button class="btn btn-num" onclick="input('2')">2</button>
+      <button class="btn btn-num" onclick="input('3')">3</button>
+      <button class="btn btn-op" onclick="setOp('+')">+</button>
+
+      <button class="btn btn-num btn-zero" onclick="input('0')">0</button>
+      <button class="btn btn-num" onclick="inputDot()">.</button>
+      <button class="btn btn-eq" onclick="calculate()">=</button>
+    </div>
+  </div>
+
+  <script>
+    let current = '0', prev = null, op = null, fresh = false;
+    const disp = document.getElementById('display');
+    const expr = document.getElementById('expr');
+
+    function update(val) {
+      let num = parseFloat(val);
+      let str = isNaN(num) ? 'Error' : (Number.isInteger(num) ? num.toString() : parseFloat(num.toFixed(9)).toString());
+      disp.textContent = str.length > 12 ? parseFloat(num.toPrecision(8)).toString() : str;
+    }
+
+    function input(d) {
+      if (fresh) { current = d; fresh = false; }
+      else current = current === '0' ? d : current + d;
+      if (current.length > 12) return;
+      update(current);
+    }
+
+    function inputDot() {
+      if (fresh) { current = '0.'; fresh = false; }
+      else if (!current.includes('.')) current += '.';
+      disp.textContent = current;
+    }
+
+    function setOp(o) {
+      if (op && !fresh) calculate(true);
+      prev = parseFloat(current);
+      op = o;
+      fresh = true;
+      const symbols = { '/': '÷', '*': '×', '-': '−', '+': '+' };
+      expr.textContent = prev + ' ' + (symbols[o] || o);
+    }
+
+    function calculate(chain) {
+      if (!op || prev === null) return;
+      let a = prev, b = parseFloat(current), res;
+      if (op === '/' && b === 0) { disp.textContent = 'Error'; op = null; return; }
+      if (op === '+') res = a + b;
+      else if (op === '-') res = a - b;
+      else if (op === '*') res = a * b;
+      else if (op === '/') res = a / b;
+      if (!chain) { expr.textContent = ''; op = null; }
+      current = parseFloat(res.toFixed(9)).toString();
+      update(current);
+      fresh = true;
+      prev = chain ? res : null;
+    }
+
+    function clearAll() { current = '0'; prev = null; op = null; fresh = false; update('0'); expr.textContent = ''; }
+    function toggleSign() { current = (parseFloat(current) * -1).toString(); update(current); }
+    function percent() { current = (parseFloat(current) / 100).toString(); update(current); }
+  </script>
+</body>
+</html>
