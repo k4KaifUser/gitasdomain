@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>For Begum Saheba 🌙</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Nunito:wght@300;400&display=swap" rel="stylesheet"/>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: #060612;
+  min-height: 100vh;
+  font-family: 'Nunito', sans-serif;
+  overflow-x: hidden;
+}
+
+.scene {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+canvas#sky {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.aurora {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 55vh;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 40% at 20% 0%, rgba(80,40,120,0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 30% at 70% 10%, rgba(40,60,130,0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 25% at 50% 5%, rgba(100,50,140,0.10) 0%, transparent 70%);
+  animation: auroraPulse 8s ease-in-out infinite;
+}
+
+@keyframes auroraPulse {
+  0%,100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+.moon-wrap {
+  position: fixed;
+  top: 36px;
+  right: 70px;
+  z-index: 3;
+  animation: moonFloat 6s ease-in-out infinite;
+}
+
+@keyframes moonFloat {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.moon-glow {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 130px; height: 130px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,240,160,0.13) 0%, transparent 70%);
+  animation: glowPulse 4s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%,100% { transform: translate(-50%,-50%) scale(1); opacity: 0.7; }
+  50% { transform: translate(-50%,-50%) scale(1.15); opacity: 1; }
+}
+
+.content {
+  position: relative;
+  z-index: 4;
+  width: 100%;
+  max-width: 660px;
+  padding: 70px 20px 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.top-tag {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 300;
+  font-size: 11px;
+  letter-spacing: 5px;
+  color: #a07840;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+  opacity: 0;
+  animation: riseIn 1s 0.2s ease forwards;
+}
+
+.title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  font-size: clamp(36px, 8vw, 58px);
+  color: #f2e0bc;
+  text-align: center;
+  line-height: 1.12;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+  opacity: 0;
+  animation: riseIn 1.1s 0.4s ease forwards;
+}
+
+.title em {
+  font-style: italic;
+  color: #d4a84b;
+}
+
+.subtitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-weight: 300;
+  font-size: 16px;
+  color: #8a7050;
+  letter-spacing: 1px;
+  margin-bottom: 48px;
+  opacity: 0;
+  animation: riseIn 1s 0.7s ease forwards;
+}
+
+.orn {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 260px;
+  margin-bottom: 48px;
+  opacity: 0;
+  animation: riseIn 1s 0.9s ease forwards;
+}
+
+.orn-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(196,160,80,0.4), transparent);
+}
+
+.orn-diamond {
+  width: 6px; height: 6px;
+  background: #c4a050;
+  transform: rotate(45deg);
+  opacity: 0.6;
+}
+
+.card {
+  width: 100%;
+  border-radius: 24px;
+  border: 1px solid rgba(196,160,80,0.15);
+  background: rgba(255,255,255,0.025);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 52px 48px 48px;
+  position: relative;
+  opacity: 0;
+  animation: riseIn 1.2s 1.1s ease forwards;
+  overflow: hidden;
+}
+
+.card-corner {
+  position: absolute;
+  width: 60px; height: 60px;
+  pointer-events: none;
+}
+
+.card-corner.tl { top: 0; left: 0; border-top: 1px solid rgba(196,160,80,0.3); border-left: 1px solid rgba(196,160,80,0.3); border-radius: 24px 0 0 0; }
+.card-corner.tr { top: 0; right: 0; border-top: 1px solid rgba(196,160,80,0.3); border-right: 1px solid rgba(196,160,80,0.3); border-radius: 0 24px 0 0; }
+.card-corner.bl { bottom: 0; left: 0; border-bottom: 1px solid rgba(196,160,80,0.3); border-left: 1px solid rgba(196,160,80,0.3); border-radius: 0 0 0 24px; }
+.card-corner.br { bottom: 0; right: 0; border-bottom: 1px solid rgba(196,160,80,0.3); border-right: 1px solid rgba(196,160,80,0.3); border-radius: 0 0 24px 0; }
+
+.card-glow-tl {
+  position: absolute;
+  top: -80px; left: -80px;
+  width: 240px; height: 240px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(160,100,200,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.card-glow-br {
+  position: absolute;
+  bottom: -80px; right: -80px;
+  width: 240px; height: 240px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(80,100,200,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.greeting {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 18px;
+  color: #c4a050;
+  margin-bottom: 32px;
+}
+
+.letter {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 300;
+  font-size: 15.5px;
+  line-height: 2.1;
+  color: #c8c2b8;
+  white-space: pre-line;
+}
+
+.letter .hl {
+  color: #e8d4a0;
+  font-weight: 400;
+}
+
+.letter .soft {
+  color: #a898c8;
+  font-style: italic;
+}
+
+.letter .em {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 17px;
+  color: #d4b870;
+}
+
+.separator {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(196,160,80,0.2), transparent);
+  margin: 36px 0;
+}
+
+.sign {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.sign .from {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-weight: 300;
+  font-size: 14px;
+  color: #8a7050;
+  letter-spacing: 1px;
+}
+
+.sign .name {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-weight: 600;
+  font-size: 26px;
+  color: #d4a84b;
+  letter-spacing: 0.5px;
+}
+
+.floating-hearts {
+  display: flex;
+  gap: 20px;
+  margin-top: 44px;
+  opacity: 0;
+  animation: riseIn 1s 1.8s ease forwards;
+}
+
+.fh {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.heart-svg {
+  animation: hbeat 2.6s ease-in-out infinite;
+}
+
+.fh:nth-child(1) .heart-svg { animation-delay: 0s; }
+.fh:nth-child(2) .heart-svg { animation-delay: 0.4s; }
+.fh:nth-child(3) .heart-svg { animation-delay: 0.8s; }
+
+@keyframes hbeat {
+  0%,100% { transform: scale(1); }
+  30% { transform: scale(1.2); }
+  50% { transform: scale(1); }
+  70% { transform: scale(1.1); }
+}
+
+.date-tag {
+  margin-top: 40px;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 13px;
+  letter-spacing: 3px;
+  color: #5a5040;
+  opacity: 0;
+  animation: riseIn 1s 2.2s ease forwards;
+}
+
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 500px) {
+  .card { padding: 32px 22px 36px; }
+  .moon-wrap { right: 18px; top: 18px; }
+  .title { font-size: 34px; }
+}
+</style>
+</head>
+<body>
+
+<div class="scene">
+  <canvas id="sky"></canvas>
+  <div class="aurora"></div>
+
+  <div class="moon-wrap">
+    <div class="moon-glow"></div>
+    <svg width="72" height="72" viewBox="0 0 72 72">
+      <defs>
+        <radialGradient id="mg" cx="40%" cy="35%" r="55%">
+          <stop offset="0%" stop-color="#fffce8"/>
+          <stop offset="100%" stop-color="#f0d878"/>
+        </radialGradient>
+      </defs>
+      <circle cx="36" cy="36" r="28" fill="url(#mg)" opacity="0.96"/>
+      <circle cx="50" cy="24" r="21" fill="#060612"/>
+      <circle cx="20" cy="26" r="2" fill="#f5e090" opacity="0.35"/>
+      <circle cx="30" cy="48" r="1.3" fill="#f5e090" opacity="0.25"/>
+      <circle cx="25" cy="37" r="0.9" fill="#f5e090" opacity="0.2"/>
+    </svg>
+  </div>
+
+  <div class="content">
+    <p class="top-tag">sirf tumhare liye ✦</p>
+
+    <h1 class="title">Meri <em>Begum Saheba</em> 🌙</h1>
+    <p class="subtitle">Divya jaan — ek khat, dil se</p>
+
+    <div class="orn">
+      <div class="orn-line"></div>
+      <div class="orn-diamond"></div>
+      <div class="orn-line"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-corner tl"></div>
+      <div class="card-corner tr"></div>
+      <div class="card-corner bl"></div>
+      <div class="card-corner br"></div>
+      <div class="card-glow-tl"></div>
+      <div class="card-glow-br"></div>
+
+      <p class="greeting">Divya jaan,</p>
+
+      <div class="letter">
+<span class="hl">27 April</span> ko humne baatein shuru ki thi —
+aur haan, obviously <span class="em">gandi wali</span> 😂
+
+Par yaar... <span class="soft">mujhe ni pata tha tu itni paas aajayegi.</span>
+Sirf <span class="hl">1 week</span> mein — itni kareeb, yeh socha bhi ni tha maine. 🤍
+
+Teri bak bak...
+Teri narazgi...
+Teri random si baatein...
+Aur mujhpe haq jatana —
+<span class="soft">sab kuch achha lagta hai mujhe.</span>
+
+Ek baar, sirf <span class="hl">ek din ek raat</span> door thi tu —
+aur aisa laga... <span class="soft">koi apna sa bichad gaya.</span> 🌙
+
+Socha tha reh lunga.
+Par woh <span class="hl">2 ghante</span> mein hi itni yaad aayi teri —
+samajh gaya... <span class="soft">ni reh sakta.</span> 💫
+
+Aur jo tu sunna chahti hai na —
+<span class="em">woh kisi aur din</span> 😁
+      </div>
+
+      <div class="separator"></div>
+
+      <div class="sign">
+        <span class="from">hamesha tumhara,</span>
+        <span class="name">Kadwa Karela 🌙</span>
+      </div>
+    </div>
+
+    <div class="floating-hearts">
+      <div class="fh">
+        <svg class="heart-svg" width="22" height="20" viewBox="0 0 22 20">
+          <path d="M11 18.5C11 18.5 1 12 1 5.5A5.5 5.5 0 0 1 11 3a5.5 5.5 0 0 1 10 2.5C21 12 11 18.5 11 18.5Z" fill="#c8a0c0"/>
+        </svg>
+      </div>
+      <div class="fh">
+        <svg class="heart-svg" width="28" height="26" viewBox="0 0 28 26">
+          <path d="M14 24C14 24 1 15.5 1 7A6.5 6.5 0 0 1 14 4a6.5 6.5 0 0 1 13 3C27 15.5 14 24 14 24Z" fill="#d4a84b"/>
+        </svg>
+      </div>
+      <div class="fh">
+        <svg class="heart-svg" width="22" height="20" viewBox="0 0 22 20">
+          <path d="M11 18.5C11 18.5 1 12 1 5.5A5.5 5.5 0 0 1 11 3a5.5 5.5 0 0 1 10 2.5C21 12 11 18.5 11 18.5Z" fill="#9090d0"/>
+        </svg>
+      </div>
+    </div>
+
+    <p class="date-tag">27 April — hamesha ✦</p>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('sky');
+const ctx = canvas.getContext('2d');
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+const NUM_STARS = 280;
+const stars = Array.from({length: NUM_STARS}, () => ({
+  x: Math.random(),
+  y: Math.random() * 0.85,
+  r: Math.random() * 1.5 + 0.3,
+  alpha: Math.random() * 0.5 + 0.15,
+  twinkleSpeed: Math.random() * 0.02 + 0.005,
+  phase: Math.random() * Math.PI * 2,
+  rgb: Math.random() > 0.85 ? [208,216,255] : (Math.random() > 0.7 ? [255,238,221] : [255,255,255])
+}));
+
+const fireflies = Array.from({length: 18}, () => ({
+  x: Math.random(),
+  y: 0.4 + Math.random() * 0.55,
+  r: Math.random() * 1.2 + 0.5,
+  alpha: Math.random() * 0.4 + 0.1,
+  vx: (Math.random() - 0.5) * 0.0003,
+  vy: (Math.random() - 0.5) * 0.0002,
+  phase: Math.random() * Math.PI * 2,
+  speed: Math.random() * 0.015 + 0.005
+}));
+
+let t = 0;
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  for (const s of stars) {
+    const a = s.alpha * (0.45 + 0.55 * Math.sin(t * s.twinkleSpeed * 60 + s.phase));
+    ctx.beginPath();
+    ctx.arc(s.x * canvas.width, s.y * canvas.height, s.r, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(${s.rgb[0]},${s.rgb[1]},${s.rgb[2]},${a})`;
+    ctx.fill();
+  }
+
+  for (const f of fireflies) {
+    f.x += f.vx;
+    f.y += f.vy;
+    if (f.x < 0) f.x = 1;
+    if (f.x > 1) f.x = 0;
+    if (f.y < 0.3) f.y = 0.95;
+    if (f.y > 1) f.y = 0.3;
+
+    const fa = f.alpha * (0.3 + 0.7 * Math.sin(t * f.speed * 60 + f.phase));
+    const grd = ctx.createRadialGradient(
+      f.x * canvas.width, f.y * canvas.height, 0,
+      f.x * canvas.width, f.y * canvas.height, f.r * 6
+    );
+    grd.addColorStop(0, `rgba(200,190,255,${fa})`);
+    grd.addColorStop(1, 'rgba(200,190,255,0)');
+    ctx.beginPath();
+    ctx.arc(f.x * canvas.width, f.y * canvas.height, f.r * 6, 0, Math.PI*2);
+    ctx.fillStyle = grd;
+    ctx.fill();
+  }
+
+  t++;
+  requestAnimationFrame(draw);
+}
+draw();
+
+function shootingStar() {
+  const sx = Math.random() * window.innerWidth * 0.65;
+  const sy = Math.random() * window.innerHeight * 0.35;
+  const angle = (25 + Math.random() * 20) * Math.PI / 180;
+  const dist = 140 + Math.random() * 140;
+
+  const el = document.createElement('canvas');
+  el.width = window.innerWidth;
+  el.height = window.innerHeight;
+  el.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:2;pointer-events:none;';
+  document.body.appendChild(el);
+  const sc = el.getContext('2d');
+
+  let prog = 0;
+  const dur = 55;
+  function anim() {
+    sc.clearRect(0, 0, el.width, el.height);
+    const p = prog / dur;
+    const cx = sx + (dist * Math.cos(angle)) * p;
+    const cy = sy + (dist * Math.sin(angle)) * p;
+    const tailLen = Math.min(p * dist, 90);
+    const tx = cx - tailLen * Math.cos(angle);
+    const ty = cy - tailLen * Math.sin(angle);
+    const grad = sc.createLinearGradient(tx, ty, cx, cy);
+    grad.addColorStop(0, 'rgba(255,255,240,0)');
+    grad.addColorStop(0.6, 'rgba(255,255,240,0.5)');
+    grad.addColorStop(1, 'rgba(255,255,255,0.95)');
+    sc.beginPath();
+    sc.moveTo(tx, ty);
+    sc.lineTo(cx, cy);
+    sc.strokeStyle = grad;
+    sc.lineWidth = 1.5;
+    sc.stroke();
+    prog++;
+    if (prog <= dur) requestAnimationFrame(anim);
+    else el.remove();
+  }
+  anim();
+}
+
+setInterval(shootingStar, 3500);
+setTimeout(shootingStar, 1500);
+setTimeout(shootingStar, 5000);
+</script>
+
+</body>
+</html>
